@@ -228,13 +228,8 @@ namespace RobotApp.Droid.Services
                     if (buffer.Ready())
                     {
                         string message = await buffer.ReadLineAsync();
-                        int commandNameIndex = message.IndexOf(message);
-
-                        if (commandNameIndex != -1)
-                        {
-                            message = message.Substring(commandNameIndex);
-                            return Array.AsReadOnly(message.Split(";"));
-                        }
+                        message = message.Substring(commandName.Length+1);
+                        return Array.AsReadOnly(message.Split(";"));
                     }
                     else
                     {
