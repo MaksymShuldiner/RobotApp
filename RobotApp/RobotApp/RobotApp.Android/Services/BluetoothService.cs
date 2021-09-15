@@ -106,6 +106,12 @@ namespace RobotApp.Droid.Services
         public async Task ConnectAsync(string bluetoothName)
         {
             var adapter = BluetoothAdapter.DefaultAdapter;
+
+            if (!adapter.Enable())
+            {
+                throw new Exception("Adapter enabling failed.");
+            }
+
             BluetoothDevice device = null;
 
             foreach (var bd in adapter.BondedDevices)
