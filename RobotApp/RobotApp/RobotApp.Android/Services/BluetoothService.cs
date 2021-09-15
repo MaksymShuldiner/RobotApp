@@ -130,7 +130,7 @@ namespace RobotApp.Droid.Services
             }
             else
             {
-                UUID uuid = UUID.RandomUUID();
+                UUID uuid = UUID.FromString("00001101-0000-1000-8000-00805F9B34FB");
                 if ((int)Android.OS.Build.VERSION.SdkInt >= 10)
                 {
                     _bluetoothSocket = _bluetoothDevice.CreateInsecureRfcommSocketToServiceRecord(uuid);
