@@ -18,15 +18,18 @@ namespace RobotApp
         {
             InitializeComponent();
             _bluetoothService = bluetoothService;
+            BluetoothPoints.ItemsSource = _bluetoothService.PairedDevices();
+            BluetoothPoints.SelectedIndex = 0;
         }
 
-        public async void Message_Sent(object sender, EventArgs e)
+        public async void LoadWifiHotspots(object sender, EventArgs e)
         {
-            var bluetoothName = BluetoothName.Text;
-            var bluetoothMessage = BluetoothMessage.Text;
+            var bluetoothName = BluetoothPoints.SelectedItem.ToString();
 
             await _bluetoothService.ConnectAsync(bluetoothName);
-            _bluetoothService.WriteData(bluetoothMessage);
+            await _bluetoothService.WriteDataAsync("getNetworks");
+            var wifiHotspots = await _bluetoothService.WaitAndReadAsync(TimeSpan.FromSeconds(30), "scanResponse");
+            WifiPoints.ItemsSource = wifiHotspots;
             _bluetoothService.Close();
         }
     }

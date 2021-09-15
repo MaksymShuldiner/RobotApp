@@ -9,13 +9,11 @@
         </Frame>
         <Label Text="Choose a message" HorizontalTextAlignment="Center" FontSize="Title"/>
         <StackLayout Padding="20,0,20,0" Spacing="10">
-            <Entry x:Name="BluetoothName" Placeholder="Bluetooth Name"
-                VerticalOptions="Start"
-                HorizontalOptions="FillAndExpand" />
-            <Entry x:Name="BluetoothMessage" Placeholder="Bluetooth Message"
-                VerticalOptions="Start"
-                HorizontalOptions="FillAndExpand" />
-            <Button Text="Submit" VerticalOptions="EndAndExpand" Clicked="Message_Sent"/>
+            <Picker x:Name="BluetoothPoints" Title="Bluetooth hotspots" HorizontalOptions="FillAndExpand">
+            </Picker>
+            <Picker x:Name="WifiPoints" Title="Wifi hotspots" HorizontalOptions="FillAndExpand">
+            </Picker>
+            <Button Text="Load Wifi Hotspots" VerticalOptions="EndAndExpand" Clicked="LoadWifiHotspots"/>
         </StackLayout>
     </StackLayout>
 

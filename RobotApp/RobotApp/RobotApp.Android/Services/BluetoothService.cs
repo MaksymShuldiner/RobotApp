@@ -3,6 +3,7 @@ using Java.IO;
 using Java.Util;
 using RobotApp.Droid.Services.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -106,13 +107,18 @@ namespace RobotApp.Droid.Services
             }
         }
 
-        public async Task ConnectAsync(string bluetoothName)
+        public async Task<bool> ConnectAsync(string bluetoothName)
         {
-            _bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
+            _bluetoothAdapter ??= BluetoothAdapter.DefaultAdapter;
+
+            if (_bluetoothAdapter == null)
+            {
+                return false;
+            }
 
             if (!_bluetoothAdapter.Enable())
             {
-                throw new Exception("Adapter enabling failed.");
+                return false;
             }
 
             foreach (var bd in _bluetoothAdapter.BondedDevices)
@@ -127,6 +133,7 @@ namespace RobotApp.Droid.Services
             if (_bluetoothDevice == null)
             {
                 System.Diagnostics.Debug.WriteLine("Named device not found.");
+                return false;
             }
             else
             {
@@ -142,16 +149,33 @@ namespace RobotApp.Droid.Services
 
                 if (_bluetoothSocket != null)
                 {
-                    await _bluetoothSocket.ConnectAsync();
+                    try
+                    {
+                        await _bluetoothSocket.ConnectAsync();
+                    }
+                    catch
+                    {
+                        #if DEBUG
+                            throw;
+                        #endif
+
+                        return false;
+                    }
+
+                    return true;
                 }
+
+                return false;
             }
         }
 
         public ObservableCollection<string> PairedDevices()
         {
-            if(_bluetoothAdapter == null)
+            _bluetoothAdapter ??= BluetoothAdapter.DefaultAdapter;
+
+            if (_bluetoothAdapter == null)
             {
-                _bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
+                return new ObservableCollection<string>();
             }
 
             ObservableCollection<string> devices = new ObservableCollection<string>();
@@ -162,7 +186,7 @@ namespace RobotApp.Droid.Services
             return devices;
         }
 
-        public void WriteData(string data)
+        public async Task WriteDataAsync(string data)
         {
             var javaString = new Java.Lang.String(data);
             var outStream = _bluetoothSocket.OutputStream;
@@ -173,7 +197,7 @@ namespace RobotApp.Droid.Services
 
             try
             {
-                outStream.Write(msgBuffer, 0, msgBuffer.Length);
+                await outStream.WriteAsync(msgBuffer, 0, msgBuffer.Length);
             }
             catch (Exception e)
             {
@@ -184,9 +208,42 @@ namespace RobotApp.Droid.Services
 
         public void Close()
         {
-            _bluetoothSocket.Dispose();
+            _bluetoothSocket.Close();
             _bluetoothDevice.Dispose();
             _bluetoothAdapter.Dispose();
+        }
+
+        public async Task<System.Collections.IList> WaitAndReadAsync(TimeSpan? timeOut, string commandName)
+        {
+            var currentDate = DateTime.Now;
+
+            if (_bluetoothSocket.IsConnected)
+            {
+                System.Diagnostics.Debug.WriteLine("Connected!");
+                var mReader = new InputStreamReader(_bluetoothSocket.InputStream);
+                var buffer = new BufferedReader(mReader);
+
+                while (DateTime.Now.Subtract(currentDate) < timeOut)
+                {
+                    if (buffer.Ready())
+                    {
+                        string message = await buffer.ReadLineAsync();
+                        int commandNameIndex = message.IndexOf(message);
+
+                        if (commandNameIndex != -1)
+                        {
+                            message = message.Substring(commandNameIndex);
+                            return Array.AsReadOnly(message.Split(";"));
+                        }
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("No data to read");
+                    }
+                }
+            }
+
+            return new ReadOnlyCollection<string>(new List<string>());
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
@@ -8,9 +9,10 @@ namespace RobotApp.Droid.Services.Contracts
     {
         void StartReading(string name, TimeSpan listeningTime, int sleepTime, bool readAsCharArray);
         void StopReading();
-        void WriteData(string data);
+        Task WriteDataAsync(string data);
         ObservableCollection<string> PairedDevices();
-        Task ConnectAsync(string bluetoothName);
+        Task<bool> ConnectAsync(string bluetoothName);
+        Task<System.Collections.IList> WaitAndReadAsync(TimeSpan? timeOut, string commandName);
         void Close();
     }
 }
