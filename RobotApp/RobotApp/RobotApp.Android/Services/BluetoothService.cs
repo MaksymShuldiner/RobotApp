@@ -13,6 +13,9 @@ namespace RobotApp.Droid.Services
     {
         private CancellationTokenSource _ct { get; set; }
         private BluetoothSocket _bluetoothSocket { get; set; }
+        private BluetoothDevice _bluetoothDevice { get; set; }
+        private BluetoothAdapter _bluetoothAdapter { get; set; }
+        
 
         public BluetoothService(CancellationTokenSource ct)
         {
@@ -105,27 +108,23 @@ namespace RobotApp.Droid.Services
 
         public async Task ConnectAsync(string bluetoothName)
         {
-            var adapter = BluetoothAdapter.DefaultAdapter;
+            _bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
 
-            if (!adapter.Enable())
+            if (!_bluetoothAdapter.Enable())
             {
                 throw new Exception("Adapter enabling failed.");
             }
 
-            BluetoothDevice device = null;
-
-            foreach (var bd in adapter.BondedDevices)
+            foreach (var bd in _bluetoothAdapter.BondedDevices)
             {
                 if (bd.Name.ToUpper().IndexOf(bluetoothName.ToUpper()) >= 0)
                 {
-                    device = bd;
+                    _bluetoothDevice = bd;
                     break;
                 }
             }
 
-            adapter.Dispose();
-
-            if (device == null)
+            if (_bluetoothDevice == null)
             {
                 System.Diagnostics.Debug.WriteLine("Named device not found.");
             }
@@ -134,14 +133,12 @@ namespace RobotApp.Droid.Services
                 UUID uuid = UUID.RandomUUID();
                 if ((int)Android.OS.Build.VERSION.SdkInt >= 10)
                 {
-                    _bluetoothSocket = device.CreateInsecureRfcommSocketToServiceRecord(uuid);
+                    _bluetoothSocket = _bluetoothDevice.CreateInsecureRfcommSocketToServiceRecord(uuid);
                 }
                 else
                 {
-                    _bluetoothSocket = device.CreateRfcommSocketToServiceRecord(uuid);
+                    _bluetoothSocket = _bluetoothDevice.CreateRfcommSocketToServiceRecord(uuid);
                 }
-
-                device.Dispose();
 
                 if (_bluetoothSocket != null)
                 {
@@ -152,10 +149,14 @@ namespace RobotApp.Droid.Services
 
         public ObservableCollection<string> PairedDevices()
         {
-            BluetoothAdapter adapter = BluetoothAdapter.DefaultAdapter;
+            if(_bluetoothAdapter == null)
+            {
+                _bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
+            }
+
             ObservableCollection<string> devices = new ObservableCollection<string>();
 
-            foreach (var bd in adapter.BondedDevices)
+            foreach (var bd in _bluetoothAdapter.BondedDevices)
                 devices.Add(bd.Name);
 
             return devices;
@@ -184,6 +185,8 @@ namespace RobotApp.Droid.Services
         public void Close()
         {
             _bluetoothSocket.Dispose();
+            _bluetoothDevice.Dispose();
+            _bluetoothAdapter.Dispose();
         }
     }
 }
