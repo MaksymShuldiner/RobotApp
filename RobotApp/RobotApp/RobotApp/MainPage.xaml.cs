@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RobotApp.Droid.Services.Contracts;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO.Ports;
@@ -11,32 +12,22 @@ namespace RobotApp
 {
     public partial class MainPage : ContentPage
     {
-        public MainPage()
+        private readonly IBluetoothService _bluetoothService;
+
+        public MainPage(IBluetoothService bluetoothService)
         {
             InitializeComponent();
+            _bluetoothService = bluetoothService;
         }
 
         public async void Message_Sent(object sender, EventArgs e)
         {
-            SerialPort serialPort = new SerialPort();
-            serialPort.BaudRate = 115200;
+            var bluetoothName = BluetoothName.Text;
+            var bluetoothMessage = BluetoothMessage.Text;
 
-            if (serialPort.IsOpen)
-            {
-                string message = this.Message.Text;
-
-                try
-                {
-                    serialPort.WriteLine(message);
-                    await DisplayAlert("Success", "The message was sent", "Ok");
-                }
-                catch(TimeoutException ex)
-                {
-                    throw ex;
-                }
-            }
-
-            serialPort.Close();
+            await _bluetoothService.ConnectAsync(bluetoothName);
+            _bluetoothService.WriteData(bluetoothMessage);
+            _bluetoothService.Close();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RobotApp.Droid.Services.Contracts;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -6,11 +7,11 @@ namespace RobotApp
 {
     public partial class App : Application
     {
-        public App()
+        public App(IBluetoothService bluetoothService)
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            MainPage = new MainPage(bluetoothService);
         }
 
         protected override void OnStart()

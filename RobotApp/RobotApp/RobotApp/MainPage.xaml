@@ -9,7 +9,10 @@
         </Frame>
         <Label Text="Choose a message" HorizontalTextAlignment="Center" FontSize="Title"/>
         <StackLayout Padding="20,0,20,0" Spacing="10">
-            <Entry x:Name="Message" Placeholder="Bluetooth Message"
+            <Entry x:Name="BluetoothName" Placeholder="Bluetooth Name"
+                VerticalOptions="Start"
+                HorizontalOptions="FillAndExpand" />
+            <Entry x:Name="BluetoothMessage" Placeholder="Bluetooth Message"
                 VerticalOptions="Start"
                 HorizontalOptions="FillAndExpand" />
             <Button Text="Submit" VerticalOptions="EndAndExpand" Clicked="Message_Sent"/>
