@@ -211,7 +211,6 @@ namespace RobotApp.Droid.Services
         {
             _bluetoothSocket.Close();
             _bluetoothDevice.Dispose();
-            _bluetoothAdapter.Dispose();
         }
 
         public async Task<System.Collections.IList> WaitAndReadAsync(TimeSpan? timeOut, string commandName)

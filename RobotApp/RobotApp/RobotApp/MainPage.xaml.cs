@@ -40,10 +40,9 @@ namespace RobotApp
             if (WifiPoints.SelectedItem != null && bluetoothName != null)
             {
                 //ssid with password to send to the bluetooth device
-                string result = WifiPoints.SelectedItem.ToString() + ":" + Password;
+                string result = "wifiConnect:" + WifiPoints.SelectedItem.ToString() + ":" + Password.Text;
 
                 await _bluetoothService.ConnectAsync(bluetoothName);
-                await _bluetoothService.WriteDataAsync("wifiConnect");
                 await _bluetoothService.WriteDataAsync(result);
                 _bluetoothService.Close();
             }
