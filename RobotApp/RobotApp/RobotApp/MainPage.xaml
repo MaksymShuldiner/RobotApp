@@ -7,13 +7,18 @@
         <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
             <Label Text="Robot App" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
         </Frame>
-        <Label Text="Choose a message" HorizontalTextAlignment="Center" FontSize="Title"/>
         <StackLayout Padding="20,0,20,0" Spacing="10">
-            <Picker x:Name="BluetoothPoints" Title="Bluetooth hotspots" HorizontalOptions="FillAndExpand">
+            <Picker x:Name="BluetoothPoints" Title="Choose a bluetooth device" HorizontalOptions="FillAndExpand">
             </Picker>
-            <Picker x:Name="WifiPoints" Title="Wifi hotspots" HorizontalOptions="FillAndExpand">
+            <Picker x:Name="WifiPoints" Title="Choose a wifi hotspot" HorizontalOptions="FillAndExpand">
             </Picker>
-            <Button Text="Load Wifi Hotspots" VerticalOptions="EndAndExpand" Clicked="LoadWifiHotspots"/>
+            <Button Text="Load Wifi Hotspots for the bluetooth device" VerticalOptions="EndAndExpand" Clicked="LoadWifiHotspots"/>
+            <Entry x:Name="Password" Placeholder="Enter a password for the wifi hotspot" />
+            <StackLayout Orientation="Horizontal"  HorizontalOptions="FillAndExpand">
+                <CheckBox IsChecked="false" CheckedChanged="PasswordToggle"></CheckBox>
+                <Label Padding="0,6,0,0" Text="Hotspot without password"></Label>
+            </StackLayout>
+            <Button Text="Connect to Wifi" VerticalOptions="EndAndExpand" Clicked="SendWifiCredentials"/>
         </StackLayout>
     </StackLayout>
 

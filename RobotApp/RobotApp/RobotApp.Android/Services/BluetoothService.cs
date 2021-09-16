@@ -5,6 +5,7 @@ using RobotApp.Droid.Services.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -228,7 +229,16 @@ namespace RobotApp.Droid.Services
                     if (buffer.Ready())
                     {
                         string message = await buffer.ReadLineAsync();
-                        message = message.Substring(commandName.Length+1);
+
+                        if (message.IndexOf(commandName) != -1)
+                        {
+                            message = message.Substring(commandName.Length + 1);
+                        }
+                        else
+                        {
+                            break;
+                        }
+
                         return Array.AsReadOnly(message.Split(";"));
                     }
                     else

@@ -32,5 +32,26 @@ namespace RobotApp
             WifiPoints.ItemsSource = wifiHotspots;
             _bluetoothService.Close();
         }
+
+        public async void SendWifiCredentials(object sender, EventArgs e)
+        {
+            var bluetoothName = BluetoothPoints.SelectedItem?.ToString();
+
+            if (WifiPoints.SelectedItem != null && bluetoothName != null)
+            {
+                //ssid with password to send to the bluetooth device
+                string result = WifiPoints.SelectedItem.ToString() + ":" + Password;
+
+                await _bluetoothService.ConnectAsync(bluetoothName);
+                await _bluetoothService.WriteDataAsync("wifiConnect");
+                await _bluetoothService.WriteDataAsync(result);
+                _bluetoothService.Close();
+            }
+        }
+
+        public void PasswordToggle(object sender, EventArgs e)
+        {
+            Password.IsVisible = !Password.IsVisible;
+        }
     }
 }
